@@ -2,7 +2,7 @@ import gym
 import torch
 import pickle
 from collections import namedtuple
-from models import DQN
+from .models import DQN
 
 def dqn_train(env_name='CartPole-v0', num_episodes=100000, capacity=8000, learning_rate=1e-3, memory_count=0, batch_size=256, gamma=0.995, update_count=0):
     env = gym.make(env_name).unwrapped
@@ -24,7 +24,7 @@ def dqn_train(env_name='CartPole-v0', num_episodes=100000, capacity=8000, learni
     for i_ep in range(num_episodes):
         state = env.reset()
         for t in range(10000):
-            action = agent.select_action(state)
+            action = agent.select_action(state, num_action)
             next_state, reward, done, _, info = env.step(action)
             transition = Transition(state, action, reward, next_state)
             agent.store_transition(transition)

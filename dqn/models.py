@@ -45,7 +45,7 @@ class DQN():
         return action
 
     # Store transitions for experience replay
-    def store_transition(self,transition):
+    def store_transition(self, transition):
         index = self.memory_count % self.capacity
         self.memory[index] = transition
         self.memory_count += 1
