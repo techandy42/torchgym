@@ -27,7 +27,7 @@ def record(env_name, capacity, learning_rate, memory_count, batch_size, gamma, u
     done = False
     while not done:
         frames.append(env.render(mode="rgb_array"))
-        action = agent.select_action(state)
+        action = agent.select_action(state, num_action)
         state, reward, done, _ = env.step(action)
 
     env.close()
