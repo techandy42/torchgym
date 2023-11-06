@@ -1,10 +1,10 @@
+import os
 import gym
 import imageio
 import torch
 from ..dqn.models import DQN
 
-# Function to run the trained model and record the session
-def record(env_name, capacity, learning_rate, memory_count, batch_size, gamma, update_count, model_path='dqn_model_weights.pth', video_filename='trained_model.mp4'):
+def record(env_name, model_id, capacity, learning_rate, memory_count, batch_size, gamma, update_count, video_filename='trained_model.mp4'):
     env = gym.make(env_name)
     num_state = env.observation_space.shape[0]
     num_action = env.action_space.n
@@ -19,7 +19,10 @@ def record(env_name, capacity, learning_rate, memory_count, batch_size, gamma, u
         gamma=gamma, 
         update_count=update_count
     )
-    agent.act_net.load_state_dict(torch.load(model_path))
+
+    # Construct the path to the weights file
+    weights_path = os.path.join('history', env_name, model_id, f'model_weights.pth')
+    agent.act_net.load_state_dict(torch.load(weights_path))
 
     frames = []
 

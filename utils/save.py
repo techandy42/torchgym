@@ -2,11 +2,8 @@ import os
 import torch
 import pickle
 import json
-import uuid
 
-def save(env_name, model_name, hyperparameters, agent):
-    model_id = str(uuid.uuid4())
-
+def save(env_name, model_id, data, agent):
     # Create directory 'history' if it doesn't exist
     history_path = 'history'
     if not os.path.exists(history_path):
@@ -23,11 +20,11 @@ def save(env_name, model_name, hyperparameters, agent):
         os.makedirs(model_path)
 
     # Convert hyperparameters into json and save all files in the specified subdirectory
-    hyperparameters_json = json.dumps(hyperparameters)
-    weights_path = os.path.join(model_path, f'{model_name}_model_weights_{model_id}.pth')
-    value_loss_path = os.path.join(model_path, f'{model_name}_value_loss_log_{model_id}.pkl')
-    finish_step_path = os.path.join(model_path, f'{model_name}_finish_step_log_{model_id}.pkl')
-    hyperparameters_path = os.path.join(model_path, f'{model_name}_hyperparameters_{model_id}.json')
+    data_json = json.dumps(data)
+    weights_path = os.path.join(model_path, f'model_weights.pth')
+    value_loss_path = os.path.join(model_path, f'value_loss_log.pkl')
+    finish_step_path = os.path.join(model_path, f'finish_step_log.pkl')
+    data_path = os.path.join(model_path, f'data.json')
 
     # Save the model weights
     torch.save(agent.act_net.state_dict(), weights_path)
@@ -41,5 +38,5 @@ def save(env_name, model_name, hyperparameters, agent):
         pickle.dump(agent.finish_step_log, f)
 
     # Save the hyperparameters
-    with open(hyperparameters_path, 'w') as f:
-        f.write(hyperparameters_json)
+    with open(data_path, 'w') as f:
+        f.write(data_json)

@@ -6,6 +6,7 @@ from .models import DQN
 from ..utils.save import save
 from ..callbacks.record import record
 from ..callbacks.plot import plot
+import uuid
 
 def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_count=0, batch_size=256, gamma=0.995, update_count=0, callbacks=[]):
     env = gym.make(env_name).unwrapped
@@ -41,11 +42,16 @@ def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_
                     print("episodes {}, step is {} ".format(i_ep, t))
                 break
 
+    model_id = str(uuid.uuid4())
+
     # Save model weights and training history.
     save(
-        env_name=env_name, 
-        model_name='dqn', 
-        hyperparameters={
+        env_name=env_name,
+        model_id=model_id,
+        data={
+            'env_name': env_name,
+            'model_name': 'dqn',
+            'model_id': model_id,
             'num_episodes': num_episodes,
             'capacity': capacity, 
             'learning_rate': learning_rate, 
@@ -61,6 +67,7 @@ def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_
     if 'record' in callbacks:
         record(
             env_name=env_name,
+            model_id=model_id,
             capacity=capacity,
             learning_rate=learning_rate,
             memory_count=memory_count,
@@ -70,4 +77,7 @@ def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_
         )
 
     if 'plot' in callbacks:
-        plot()
+        plot(
+            env_name=env_name, 
+            model_id=model_id
+        )
