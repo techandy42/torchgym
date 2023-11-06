@@ -4,6 +4,7 @@ import pickle
 from collections import namedtuple
 from .models import DQN
 from ..callbacks.record import record
+from ..callbacks.plot import plot
 
 def dqn_train(env_name='CartPole-v0', num_episodes=100000, capacity=8000, learning_rate=1e-3, memory_count=0, batch_size=256, gamma=0.995, update_count=0, callbacks=[]):
     env = gym.make(env_name).unwrapped
@@ -54,3 +55,6 @@ def dqn_train(env_name='CartPole-v0', num_episodes=100000, capacity=8000, learni
             gamma=gamma,
             update_count=update_count
         )
+
+    if 'plot' in callbacks:
+        plot()
