@@ -4,7 +4,7 @@ import imageio
 import torch
 from ..dqn.models import DQN
 
-def record(env_name, model_id, capacity, learning_rate, memory_count, batch_size, gamma, update_count, video_filename='trained_model.mp4'):
+def record(env_name, model_id, capacity, learning_rate, memory_count, batch_size, gamma, update_count):
     env = gym.make(env_name)
     num_state = env.observation_space.shape[0]
     num_action = env.action_space.n
@@ -35,7 +35,9 @@ def record(env_name, model_id, capacity, learning_rate, memory_count, batch_size
 
     env.close()
 
+    video_path = os.path.join('history', env_name, model_id, f'trained_model.mp4')
+
     # Save the recorded frames as a video
-    with imageio.get_writer(video_filename, fps=30) as video:
+    with imageio.get_writer(video_path, fps=30) as video:
         for frame in frames:
             video.append_data(frame)
