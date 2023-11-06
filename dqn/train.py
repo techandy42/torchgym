@@ -3,8 +3,9 @@ import torch
 import pickle
 from collections import namedtuple
 from .models import DQN
+from ..callbacks.record import record
 
-def dqn_train(env_name='CartPole-v0', num_episodes=100000, capacity=8000, learning_rate=1e-3, memory_count=0, batch_size=256, gamma=0.995, update_count=0):
+def dqn_train(env_name='CartPole-v0', num_episodes=100000, capacity=8000, learning_rate=1e-3, memory_count=0, batch_size=256, gamma=0.995, update_count=0, callbacks=[]):
     env = gym.make(env_name).unwrapped
     num_state = env.observation_space.shape[0]
     num_action = env.action_space.n
@@ -42,3 +43,14 @@ def dqn_train(env_name='CartPole-v0', num_episodes=100000, capacity=8000, learni
         pickle.dump(agent.value_loss_log, f)
     with open('dqn_finish_step_log.pkl', 'wb') as f:
         pickle.dump(agent.finish_step_log, f)
+
+    if 'record' in callbacks:
+        record(
+            env_name=env_name,
+            capacity=capacity,
+            learning_rate=learning_rate,
+            memory_count=memory_count,
+            batch_size=batch_size,
+            gamma=gamma,
+            update_count=update_count
+        )
