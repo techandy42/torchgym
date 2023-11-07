@@ -19,7 +19,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
         if 'save_on_max_finish_step' in callbacks and 'save_on_min_finish_step' in callbacks:
             print('You cannot have both save_on_max_finish_step and save_on_min_finish_step callbacks.')
             print('Exiting from training...')
-            return False
+            return None
 
         start_time = datetime.now()
 
@@ -191,8 +191,8 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
         print(f'Model saved to history/{env_name}/{model_id}')
         print(f'Finished training...')
 
-        return True
+        return model_id
 
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-        return False
+        return None
