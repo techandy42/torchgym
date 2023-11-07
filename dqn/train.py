@@ -8,10 +8,15 @@ from .models import DQN
 from ..utils.save import save
 from ..callbacks.record import record
 from ..callbacks.plot import plot
+from ..callbacks.eval import eval
 import uuid
 
 def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer='Adam', saved_model_id=None, callbacks=[]):
     try:
+        if 'only_eval' in callbacks and saved_model_id is None:
+            print('Error: only_eval callback requires saved_model_id to be specified.')
+            return False
+
         # Load hyperparameters from saved model.
         data = None
         if saved_model_id is not None:
@@ -28,6 +33,20 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
                 batch_size = data['batch_size']
                 net_layers = data['net_layers']
                 optimizer = data['optimizer']
+
+            if 'only_eval' in callbacks:
+                print('Evaluating existing model...')
+                eval(
+                    env_name=env_name,
+                    model_id=saved_model_id,
+                    learning_rate=learning_rate,
+                    gamma=gamma,
+                    exploration_rate=exploration_rate,
+                    capacity=capacity,
+                    batch_size=batch_size,
+                    net_layers=net_layers,
+                    optimizer=optimizer
+                )
         
         env = gym.make(env_name).unwrapped
         num_state = env.observation_space.shape[0]
@@ -117,6 +136,20 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
                 env_name=env_name, 
                 model_id=model_id
             )
+
+        if 'eval' in callbacks:
+            eval(
+                env_name=env_name,
+                model_id=model_id,
+                learning_rate=learning_rate,
+                gamma=gamma,
+                exploration_rate=exploration_rate,
+                capacity=capacity,
+                batch_size=batch_size,
+                net_layers=net_layers,
+                optimizer=optimizer
+            )
+
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
         return False

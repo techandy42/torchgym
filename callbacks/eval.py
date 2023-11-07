@@ -1,0 +1,41 @@
+import os
+import gym
+import torch
+from ..dqn.models import DQN
+
+def eval(env_name, model_id, learning_rate, gamma, exploration_rate, capacity, batch_size, net_layers, optimizer):
+    env = gym.make(env_name)
+    num_state = env.observation_space.shape[0]
+    num_action = env.action_space.n
+
+    agent = DQN(
+        num_state=num_state,
+        num_action=num_action,
+        learning_rate=learning_rate,
+        gamma=gamma,
+        exploration_rate=exploration_rate,
+        capacity=capacity, 
+        batch_size=batch_size, 
+        net_layers=net_layers,
+        optimizer=optimizer
+    )
+
+    # Construct the path to the weights file
+    weights_path = os.path.join('history', env_name, model_id, f'model_weights.pth')
+    agent.act_net.load_state_dict(torch.load(weights_path))
+
+    state = env.reset()
+    done = False
+    total_num_steps = 0
+    num_episodes = 10
+    for i in range(0, num_episodes):
+        num_steps = 0
+        while not done:
+            action = agent.select_action(state, num_action)
+            state, reward, done, _ = env.step(action)
+            num_steps += 1
+        total_num_steps += num_steps
+    avg_num_steps = total_num_steps / num_episodes
+    print(f'Average number of steps is: {avg_num_steps}')
+
+    env.close()
