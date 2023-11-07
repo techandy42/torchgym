@@ -28,7 +28,7 @@ def parse_timedelta(time_str):
 
 def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer_label='Adam', optimizer_callback=None, saved_model_id=None, callbacks=[]):
     try:
-        start_time = datetime.now().time()
+        start_time = datetime.now()
 
         # Load hyperparameters from saved model.
         data = None
@@ -92,7 +92,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
 
         model_id = str(uuid.uuid4())
 
-        end_time = datetime.now().time()
+        end_time = datetime.now()
 
         training_duration = end_time - start_time
 
