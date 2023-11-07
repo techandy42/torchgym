@@ -20,6 +20,8 @@ def dqn_eval(saved_model_id):
             net_layers = data['net_layers']
             optimizer = data['optimizer']
 
+            print(f'env_name: {env_name}')
+
             env = gym.make(env_name).unwrapped
             num_state = env.observation_space.shape[0]
             num_action = env.action_space.n

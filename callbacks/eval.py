@@ -2,6 +2,8 @@ import os
 import gym
 
 def eval(env_name, agent):
+    print(f'env_name: {env_name}')
+
     env = gym.make(env_name)
     num_action = env.action_space.n
 
@@ -19,7 +21,6 @@ def eval(env_name, agent):
             action = agent.select_action(state, num_action=num_action, exploration=False)  # Disable exploration if necessary
             state, reward, done, _ = env.step(action)
             num_steps += 1
-        print(f'Number of steps in episode {i}: {num_steps}')
         total_num_steps += num_steps
     avg_num_steps = total_num_steps / num_episodes
     print(f'Average number of steps per episode: {avg_num_steps}')
