@@ -5,38 +5,14 @@ import json
 import os
 from collections import namedtuple
 from .models import DQN
+from .helper import get_eval_agent
 from ..utils.save import save
+from ..utils.time import parse_timedelta
 from ..callbacks.record import record
 from ..callbacks.plot import plot
 from ..callbacks.eval import eval
 import uuid
-from datetime import datetime, timedelta
-
-def parse_timedelta(delta_str):
-    try:
-        # Initialize days and microseconds to zero
-        days = 0
-        microseconds = 0
-
-        # Check if the string includes days
-        if ', ' in delta_str:
-            days_str, time_str = delta_str.split(', ')
-            days = int(days_str.split()[0])  # Extract the number of days
-        else:
-            time_str = delta_str
-
-        # Check if the string includes microseconds
-        if '.' in time_str:
-            time_str, microseconds_str = time_str.split('.')
-            microseconds = int(microseconds_str)
-
-        # Extract hours, minutes, seconds from the time part
-        hours, minutes, seconds = [int(part) for part in time_str.split(':')]
-
-        return timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds, microseconds=microseconds)
-    except Exception as e:
-        print('timedelta parsing failed due to following error: {e}')
-        return timedelta(days=0, hours=0, minutes=0, seconds=0, microseconds=0)
+from datetime import datetime
 
 def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer_label='Adam', optimizer_callback=None, loss_func_label='MSELoss', loss_func_callback=None, model_label=None, saved_model_id=None, callbacks=[]):
     try:
@@ -96,8 +72,8 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
         agent.act_net.train()
 
         # Training loop.
-        max_t = -1
-        min_t = 10001
+        max_t = 1
+        min_t = 10000
         for i_ep in range(num_episodes):
             state = env.reset()
             max_updated = False
@@ -188,29 +164,10 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
             print('Saving model on last episode...')
 
         # Initialize the evaluation DQN agent.
-        eval_agent = DQN(
-            num_state=num_state,
-            num_action=num_action,
-            learning_rate=learning_rate,
-            gamma=gamma,
-            exploration_rate=exploration_rate,
-            capacity=capacity, 
-            batch_size=batch_size, 
-            net_layers=net_layers,
-            optimizer_callback=None,
-            loss_func_callback=None
+        eval_agent = get_eval_agent(
+            env_name=env_name, 
+            saved_model_id=model_id
         )
-
-        # Load model weights and training history.
-        model_path = os.path.join('history', env_name, model_id)
-        weights_path = os.path.join(model_path, 'model_weights.pth')
-        value_loss_path = os.path.join(model_path, 'value_loss_log.pkl')
-        finish_step_path = os.path.join(model_path, 'finish_step_log.pkl')
-        eval_agent.act_net.load_state_dict(torch.load(weights_path))
-        with open(value_loss_path, 'rb') as f:
-            eval_agent.value_loss_log = pickle.load(f)
-        with open(finish_step_path, 'rb') as f:
-            eval_agent.finish_step_log = pickle.load(f)
 
         # Handle callbacks.
         if 'record' in callbacks:
