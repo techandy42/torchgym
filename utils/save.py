@@ -21,10 +21,10 @@ def save(env_name, model_id, data, agent):
 
     # Convert hyperparameters into json and save all files in the specified subdirectory
     data_json = json.dumps(data)
-    weights_path = os.path.join(model_path, f'model_weights.pth')
-    value_loss_path = os.path.join(model_path, f'value_loss_log.pkl')
-    finish_step_path = os.path.join(model_path, f'finish_step_log.pkl')
-    data_path = os.path.join(model_path, f'data.json')
+    weights_path = os.path.join(model_path, 'model_weights.pth')
+    value_loss_path = os.path.join(model_path, 'value_loss_log.pkl')
+    finish_step_path = os.path.join(model_path, 'finish_step_log.pkl')
+    data_path = os.path.join(model_path, 'data.json')
 
     # Save the model weights
     torch.save(agent.act_net.state_dict(), weights_path)
