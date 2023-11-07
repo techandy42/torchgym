@@ -91,6 +91,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
                 agent.finish_step_log = pickle.load(f)
 
         model_id = str(uuid.uuid4())
+        model_saved = False
 
         agent.act_net.train()
 
@@ -147,6 +148,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
                             print(f'Saving model on current maximum finish step of {t+1} at episode {i_ep}...')
                         elif 'save_on_min_finish_step' in callbacks:
                             print(f'Saving model on current minimum finish step of {t+1} at episode {i_ep}...')
+                        model_saved = True
 
                     # Update agent and print training information.
                     agent.finish_step_log.append(t+1)
@@ -156,7 +158,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
                     
                     break
 
-        if 'save_on_min_finish_step' not in callbacks and 'save_on_max_finish_step' not in callbacks:
+        if not model_saved or ('save_on_min_finish_step' not in callbacks and 'save_on_max_finish_step' not in callbacks):
             end_time = datetime.now()
             training_duration = end_time - start_time
             # Save model weights and training history.
@@ -183,12 +185,38 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
                 }, 
                 agent=agent
             )
+            print('Saving model on last episode...')
+
+        # Initialize the evaluation DQN agent.
+        eval_agent = DQN(
+            num_state=num_state,
+            num_action=num_action,
+            learning_rate=learning_rate,
+            gamma=gamma,
+            exploration_rate=exploration_rate,
+            capacity=capacity, 
+            batch_size=batch_size, 
+            net_layers=net_layers,
+            optimizer_callback=None,
+            loss_func_callback=None
+        )
+
+        # Load model weights and training history.
+        model_path = os.path.join('history', env_name, model_id)
+        weights_path = os.path.join(model_path, 'model_weights.pth')
+        value_loss_path = os.path.join(model_path, 'value_loss_log.pkl')
+        finish_step_path = os.path.join(model_path, 'finish_step_log.pkl')
+        eval_agent.act_net.load_state_dict(torch.load(weights_path))
+        with open(value_loss_path, 'rb') as f:
+            eval_agent.value_loss_log = pickle.load(f)
+        with open(finish_step_path, 'rb') as f:
+            eval_agent.finish_step_log = pickle.load(f)
 
         # Handle callbacks.
         if 'record' in callbacks:
             record(
                 env_name=env_name,
-                agent=agent,
+                agent=eval_agent,
                 model_id=model_id,
             )
 
@@ -200,7 +228,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
 
         eval(
             env_name=env_name,
-            agent=agent
+            agent=eval_agent
         )
 
         print(f'Model saved to history/{env_name}/{model_id}')
