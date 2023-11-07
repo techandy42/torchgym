@@ -10,9 +10,26 @@ from ..callbacks.record import record
 from ..callbacks.plot import plot
 from ..callbacks.eval import eval
 import uuid
+from datetime import datetime, timedelta
 
-def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer_callback=None, saved_model_id=None, callbacks=[]):
+def parse_timedelta(time_str):
+    # Split the string by comma and whitespace to extract days and time
+    parts = time_str.split(', ')
+    days = 0
+    time_parts = parts[-1].split(':')  # Always the time part
+    if len(parts) == 2:  # There's a day part
+        days = int(parts[0].split()[0])  # 'X days' -> ['X', 'days']
+
+    # Parse the time part
+    hours, minutes, seconds = [int(part) for part in time_parts]
+
+    # Construct the timedelta
+    return timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds)
+
+def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer_label='Adam', optimizer_callback=None, saved_model_id=None, callbacks=[]):
     try:
+        start_time = datetime.now().time()
+
         # Load hyperparameters from saved model.
         data = None
         if saved_model_id is not None:
@@ -75,21 +92,29 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
 
         model_id = str(uuid.uuid4())
 
+        end_time = datetime.now().time()
+
+        training_duration = end_time - start_time
+
         # Save model weights and training history.
         save(
             env_name=env_name,
             model_id=model_id,
             data={
+                'created_at': end_time.strftime("%Y-%m-%d %H:%M:%S") if saved_model_id is None else data['created_at'],
+                'updated_at': end_time.strftime("%Y-%m-%d %H:%M:%S"),
+                'training_duration': str(training_duration) if saved_model_id is None else str(parse_timedelta(data['training_duration']) + training_duration),
                 'env_name': env_name,
                 'model_name': 'dqn',
                 'model_id': model_id,
-                'num_episodes': num_episodes + data['num_episodes'] if data is not None else num_episodes,
+                'num_episodes': num_episodes if data is None else num_episodes + data['num_episodes'],
                 'learning_rate': learning_rate,
                 'gamma': gamma,
                 'exploration_rate': exploration_rate,
                 'capacity': capacity, 
                 'batch_size': batch_size, 
                 'net_layers': net_layers,
+                'optimizer_label': optimizer_label
             }, 
             agent=agent
         )
