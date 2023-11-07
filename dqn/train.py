@@ -80,6 +80,8 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
             with open(finish_step_path, 'rb') as f:
                 agent.finish_step_log = pickle.load(f)
 
+        agent.act_net.train()
+
         # Training loop.
         for i_ep in range(num_episodes):
             state = env.reset()
@@ -122,14 +124,8 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
         if 'record' in callbacks:
             record(
                 env_name=env_name,
+                agent=agent,
                 model_id=model_id,
-                learning_rate=learning_rate,
-                gamma=gamma,
-                exploration_rate=exploration_rate,
-                capacity=capacity,
-                batch_size=batch_size,
-                net_layers=net_layers,
-                optimizer=optimizer
             )
 
         if 'plot' in callbacks:
@@ -141,14 +137,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
         if 'eval' in callbacks:
             eval(
                 env_name=env_name,
-                model_id=model_id,
-                learning_rate=learning_rate,
-                gamma=gamma,
-                exploration_rate=exploration_rate,
-                capacity=capacity,
-                batch_size=batch_size,
-                net_layers=net_layers,
-                optimizer=optimizer
+                agent=agent
             )
 
         return True
