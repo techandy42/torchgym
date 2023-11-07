@@ -31,7 +31,7 @@ class Net(nn.Module):
 
 # Define the DQN agent
 class DQN():
-    def __init__(self, num_state, num_action, learning_rate, gamma, exploration_rate, capacity, batch_size, net_layers, optimizer_calback):
+    def __init__(self, num_state, num_action, learning_rate, gamma, exploration_rate, capacity, batch_size, net_layers, optimizer_callback):
         super(DQN, self).__init__()
         self.learning_rate = learning_rate
         self.gamma = gamma
@@ -42,7 +42,7 @@ class DQN():
         self.update_count = 0
         self.target_net, self.act_net = Net(num_state, num_action, net_layers), Net(num_state, num_action, net_layers)
         self.memory = [None]*self.capacity
-        self.optimizer = optim.Adam(self.act_net.parameters(), self.learning_rate) if optimizer_calback is None else optimizer_calback(self.act_net.parameters(), self.learning_rate)
+        self.optimizer = optim.Adam(self.act_net.parameters(), self.learning_rate) if optimizer_callback is None else optimizer_callback(self.act_net.parameters(), self.learning_rate)
         self.loss_func = nn.MSELoss()
         self.value_loss_log = []
         self.finish_step_log = []
