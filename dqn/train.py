@@ -9,7 +9,7 @@ from ..callbacks.record import record
 from ..callbacks.plot import plot
 import uuid
 
-def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_count=0, batch_size=256, gamma=0.995, update_count=0, callbacks=[], path_existing=None):
+def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_count=0, batch_size=256, gamma=0.995, update_count=0, callbacks=[], saved_model_id=None):
     env = gym.make(env_name).unwrapped
     num_state = env.observation_space.shape[0]
     num_action = env.action_space.n
@@ -27,10 +27,11 @@ def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_
         update_count=update_count
     )
 
-    if path_existing is not None:
-        weights_path = os.path.join(path_existing, f'model_weights.pth')
-        value_loss_path = os.path.join(path_existing, f'value_loss_log.pkl')
-        finish_step_path = os.path.join(path_existing, f'finish_step_log.pkl')
+    if saved_model_id is not None:
+        model_path = os.path.join('history', env_name, saved_model_id)
+        weights_path = os.path.join(model_path, f'model_weights.pth')
+        value_loss_path = os.path.join(model_path, f'value_loss_log.pkl')
+        finish_step_path = os.path.join(model_path, f'finish_step_log.pkl')
         agent.act_net.load_state_dict(torch.load(weights_path))
         with open(value_loss_path, 'rb') as f:
             agent.value_loss_log = pickle.load(f)
