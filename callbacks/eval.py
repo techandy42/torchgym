@@ -36,6 +36,7 @@ def eval(env_name, model_id, learning_rate, gamma, exploration_rate, capacity, b
             num_steps += 1
         print(f'Number of steps in episode {i}: {num_steps}')
         total_num_steps += num_steps
+        state = env.reset()
     print(f'Total number of steps is: {total_num_steps}')
     avg_num_steps = total_num_steps / num_episodes
     print(f'Average number of steps is: {avg_num_steps}')
