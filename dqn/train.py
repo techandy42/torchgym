@@ -11,7 +11,7 @@ from ..callbacks.plot import plot
 from ..callbacks.eval import eval
 import uuid
 
-def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer='Adam', saved_model_id=None, callbacks=[]):
+def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer_callback=None, saved_model_id=None, callbacks=[]):
     try:
         # Load hyperparameters from saved model.
         data = None
@@ -20,15 +20,9 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
             data_path = os.path.join(model_path, 'data.json')
             with open(data_path, 'r') as f:
                 data = json.load(f)
-                print('Note that environment and hyperparameters will be overriden with the values from the saved model.')
+                print('Note that env_name and net_layers will be overriden with the values from the saved model.')
                 env_name = data['env_name']
-                learning_rate = data['learning_rate']
-                gamma = data['gamma']
-                exploration_rate = data['exploration_rate']
-                capacity = data['capacity']
-                batch_size = data['batch_size']
                 net_layers = data['net_layers']
-                optimizer = data['optimizer']
         
         env = gym.make(env_name).unwrapped
         num_state = env.observation_space.shape[0]
@@ -46,7 +40,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
             capacity=capacity, 
             batch_size=batch_size, 
             net_layers=net_layers,
-            optimizer=optimizer
+            optimizer_callback=optimizer_callback
         )
 
         # Load model weights and training history.
@@ -96,7 +90,6 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
                 'capacity': capacity, 
                 'batch_size': batch_size, 
                 'net_layers': net_layers,
-                'optimizer': optimizer,
             }, 
             agent=agent
         )
