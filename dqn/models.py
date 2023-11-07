@@ -31,7 +31,7 @@ class Net(nn.Module):
 
 # Define the DQN agent
 class DQN():
-    def __init__(self, num_state, num_action, learning_rate, gamma, exploration_rate, capacity, batch_size, net_layers):
+    def __init__(self, num_state, num_action, learning_rate, gamma, exploration_rate, capacity, batch_size, net_layers, optimizer):
         super(DQN, self).__init__()
         self.learning_rate = learning_rate
         self.gamma = gamma
@@ -42,10 +42,15 @@ class DQN():
         self.update_count = 0
         self.target_net, self.act_net = Net(num_state, num_action, net_layers), Net(num_state, num_action, net_layers)
         self.memory = [None]*self.capacity
-        self.optimizer = optim.Adam(self.act_net.parameters(), self.learning_rate)
+        self.set_optimizer(optimizer)
         self.loss_func = nn.MSELoss()
         self.value_loss_log = []
         self.finish_step_log = []
+    
+    def set_optimizer(self, optimizer):
+        # Make sure the optimizer name matches the class name of the optimizer in torch.optim
+        OptimizerClass = getattr(optim, optimizer)
+        self.optimizer = OptimizerClass(self.act_net.parameters(), lr=self.learning_rate)
 
     # Policy: Select action
     def select_action(self, state, num_action):
