@@ -29,9 +29,13 @@ class Net(nn.Module):
         action_value = self.layers[-1](x)
         return action_value
 
+def default_loss_func_callback(target_v, v, state, action, reward, next_state, normalized_reward):
+    loss_func = nn.MSELoss()
+    return loss_func(target_v, v)
+
 # Define the DQN agent
 class DQN():
-    def __init__(self, num_state, num_action, learning_rate, gamma, exploration_rate, capacity, batch_size, net_layers, optimizer_callback):
+    def __init__(self, num_state, num_action, learning_rate, gamma, exploration_rate, capacity, batch_size, net_layers, optimizer_callback, loss_func_callback):
         super(DQN, self).__init__()
         self.learning_rate = learning_rate
         self.gamma = gamma
@@ -43,7 +47,7 @@ class DQN():
         self.target_net, self.act_net = Net(num_state, num_action, net_layers), Net(num_state, num_action, net_layers)
         self.memory = [None]*self.capacity
         self.optimizer = optim.Adam(self.act_net.parameters(), self.learning_rate) if optimizer_callback is None else optimizer_callback(self.act_net.parameters(), self.learning_rate)
-        self.loss_func = nn.MSELoss()
+        self.loss_func = default_loss_func_callback if loss_func_callback is None else loss_func_callback
         self.value_loss_log = []
         self.finish_step_log = []
 
@@ -70,12 +74,12 @@ class DQN():
             action = torch.LongTensor([t.action for t in self.memory]).view(-1,1).long()
             reward = torch.tensor([t.reward for t in self.memory]).float()
             next_state = torch.tensor([t.next_state for t in self.memory]).float()
-            reward = (reward - reward.mean()) / (reward.std() + 1e-7)
+            normalized_reward = (reward - reward.mean()) / (reward.std() + 1e-7)
             with torch.no_grad():
-                target_v = reward + self.gamma * self.target_net(next_state).max(1)[0]
+                target_v = normalized_reward + self.gamma * self.target_net(next_state).max(1)[0]
             for index in BatchSampler(SubsetRandomSampler(range(len(self.memory))), batch_size=self.batch_size, drop_last=False):
                 v = (self.act_net(state).gather(1, action))[index]
-                loss = self.loss_func(target_v[index].unsqueeze(1), v)
+                loss = self.loss_func(target_v[index].unsqueeze(1), v, state, action, reward, next_state, normalized_reward)
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()

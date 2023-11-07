@@ -35,7 +35,7 @@ def parse_timedelta(delta_str):
 
         return timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds, microseconds=microseconds)
     except Exception as e:
-        print('timedelta parsing failed...')
+        print('timedelta parsing failed due to following error: {e}')
         return timedelta(days=0, hours=0, minutes=0, seconds=0, microseconds=0)
 
 def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer_label='Adam', optimizer_callback=None, saved_model_id=None, callbacks=[]):
