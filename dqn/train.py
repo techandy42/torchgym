@@ -38,7 +38,7 @@ def parse_timedelta(delta_str):
         print('timedelta parsing failed due to following error: {e}')
         return timedelta(days=0, hours=0, minutes=0, seconds=0, microseconds=0)
 
-def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer_label='Adam', optimizer_callback=None, saved_model_id=None, callbacks=[]):
+def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer_label='Adam', optimizer_callback=None, loss_func_label='MSELoss', loss_func_callback=None, model_label=None, saved_model_id=None, callbacks=[]):
     try:
         start_time = datetime.now()
 
@@ -69,7 +69,8 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
             capacity=capacity, 
             batch_size=batch_size, 
             net_layers=net_layers,
-            optimizer_callback=optimizer_callback
+            optimizer_callback=optimizer_callback,
+            loss_func_callback=loss_func_callback
         )
 
         # Load model weights and training history.
@@ -113,6 +114,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
             env_name=env_name,
             model_id=model_id,
             data={
+                'model_label': model_id if model_label is None else model_label,
                 'created_at': end_time.strftime("%Y-%m-%d %H:%M:%S") if saved_model_id is None else data['created_at'],
                 'updated_at': end_time.strftime("%Y-%m-%d %H:%M:%S"),
                 'training_duration': str(training_duration) if saved_model_id is None else str(parse_timedelta(data['training_duration']) + training_duration),
@@ -126,7 +128,8 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
                 'capacity': capacity, 
                 'batch_size': batch_size, 
                 'net_layers': net_layers,
-                'optimizer_label': optimizer_label
+                'optimizer_label': optimizer_label,
+                'loss_func_label': loss_func_label
             }, 
             agent=agent
         )

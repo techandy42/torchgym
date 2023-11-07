@@ -34,6 +34,7 @@ def dqn_eval(env_name, saved_model_id):
             batch_size=batch_size, 
             net_layers=net_layers,
             optimizer_callback=None,
+            loss_func_callback=None
         )
 
         eval(
