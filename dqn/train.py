@@ -12,19 +12,31 @@ from ..callbacks.eval import eval
 import uuid
 from datetime import datetime, timedelta
 
-def parse_timedelta(time_str):
-    # Split the string by comma and whitespace to extract days and time
-    parts = time_str.split(', ')
-    days = 0
-    time_parts = parts[-1].split(':')  # Always the time part
-    if len(parts) == 2:  # There's a day part
-        days = int(parts[0].split()[0])  # 'X days' -> ['X', 'days']
+def parse_timedelta(delta_str):
+    try:
+        # Initialize days and microseconds to zero
+        days = 0
+        microseconds = 0
 
-    # Parse the time part
-    hours, minutes, seconds = [int(part) for part in time_parts]
+        # Check if the string includes days
+        if ', ' in delta_str:
+            days_str, time_str = delta_str.split(', ')
+            days = int(days_str.split()[0])  # Extract the number of days
+        else:
+            time_str = delta_str
 
-    # Construct the timedelta
-    return timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds)
+        # Check if the string includes microseconds
+        if '.' in time_str:
+            time_str, microseconds_str = time_str.split('.')
+            microseconds = int(microseconds_str)
+
+        # Extract hours, minutes, seconds from the time part
+        hours, minutes, seconds = [int(part) for part in time_str.split(':')]
+
+        return timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds, microseconds=microseconds)
+    except Exception as e:
+        print('timedelta parsing failed...')
+        return timedelta(days=0, hours=0, minutes=0, seconds=0, microseconds=0)
 
 def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer_label='Adam', optimizer_callback=None, saved_model_id=None, callbacks=[]):
     try:
