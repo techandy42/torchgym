@@ -18,7 +18,6 @@ def dqn_eval(env_name, saved_model_id):
             capacity = data['capacity']
             batch_size = data['batch_size']
             net_layers = data['net_layers']
-            optimizer = data['optimizer']
 
         env = gym.make(env_name).unwrapped
         num_state = env.observation_space.shape[0]
