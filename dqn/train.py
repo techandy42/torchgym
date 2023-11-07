@@ -12,6 +12,7 @@ import uuid
 
 def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], saved_model_id=None, callbacks=[]):
     # Load hyperparameters from saved model.
+    data = None
     if saved_model_id is not None:
         model_path = os.path.join('history', env_name, saved_model_id)
         data_path = os.path.join(model_path, 'data.json')
@@ -82,7 +83,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
             'env_name': env_name,
             'model_name': 'dqn',
             'model_id': model_id,
-            'num_episodes': num_episodes + data['num_episodes'],
+            'num_episodes': num_episodes + data['num_episodes'] if data is not None else num_episodes,
             'learning_rate': learning_rate,
             'gamma': gamma,
             'exploration_rate': exploration_rate,
