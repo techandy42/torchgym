@@ -2,8 +2,6 @@ import os
 import gym
 
 def eval(env_name, agent):
-    print(f'env_name: {env_name}')
-
     env = gym.make(env_name)
     num_action = env.action_space.n
 
