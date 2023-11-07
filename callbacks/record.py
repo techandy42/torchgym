@@ -4,6 +4,7 @@ import imageio
 
 def record(env_name, agent, model_id):
     env = gym.make(env_name)
+    num_action = env.action_space.n
     
     # Ensure the agent's network is in evaluation mode
     agent.act_net.eval()
@@ -13,7 +14,7 @@ def record(env_name, agent, model_id):
     done = False
     while not done:
         frames.append(env.render(mode="rgb_array"))
-        action = agent.select_action(state, exploration=False)  # Disable exploration if necessary
+        action = agent.select_action(state, num_action=num_action, exploration=False)  # Disable exploration if necessary
         state, reward, done, _ = env.step(action)
 
     env.close()

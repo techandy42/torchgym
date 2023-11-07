@@ -3,6 +3,7 @@ import gym
 
 def eval(env_name, agent):
     env = gym.make(env_name)
+    num_action = env.action_space.n
 
     # Ensure the agent's network is in evaluation mode
     agent.act_net.eval()
@@ -15,7 +16,7 @@ def eval(env_name, agent):
         num_steps = 0
         while not done:
             # Assuming select_action method does not perform any learning updates
-            action = agent.select_action(state, exploration=False)  # Disable exploration if necessary
+            action = agent.select_action(state, num_action=num_action, exploration=False)  # Disable exploration if necessary
             state, reward, done, _ = env.step(action)
             num_steps += 1
         print(f'Number of steps in episode {i}: {num_steps}')

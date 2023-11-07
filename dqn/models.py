@@ -53,12 +53,12 @@ class DQN():
         self.optimizer = OptimizerClass(self.act_net.parameters(), lr=self.learning_rate)
 
     # Policy: Select action
-    def select_action(self, state, num_action):
+    def select_action(self, state, num_action, exploration=True):
         state = torch.tensor(state, dtype=torch.float).unsqueeze(0)
         value = self.act_net(state)
         action_max_value, index = torch.max(value, 1)
         action = index.item()
-        if np.random.rand(1) >= (1 - self.exploration_rate):
+        if exploration and np.random.rand(1) >= (1 - self.exploration_rate):
             action = np.random.choice(range(num_action), 1).item()
         return action
 
