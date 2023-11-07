@@ -120,6 +120,9 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
             agent=agent
         )
 
+        print(f'Model saved to history/{env_name}/{model_id}')
+        print(f'Finished training...')
+
         return True
 
     except Exception as e:
