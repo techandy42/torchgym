@@ -1,6 +1,7 @@
 import gym
 import torch
 import pickle
+import os
 from collections import namedtuple
 from .models import DQN
 from ..utils.save import save
@@ -8,7 +9,7 @@ from ..callbacks.record import record
 from ..callbacks.plot import plot
 import uuid
 
-def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_count=0, batch_size=256, gamma=0.995, update_count=0, callbacks=[]):
+def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_count=0, batch_size=256, gamma=0.995, update_count=0, callbacks=[], path_existing=None):
     env = gym.make(env_name).unwrapped
     num_state = env.observation_space.shape[0]
     num_action = env.action_space.n
@@ -25,6 +26,16 @@ def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_
         gamma=gamma, 
         update_count=update_count
     )
+
+    if path_existing is not None:
+        weights_path = os.path.join(path_existing, f'model_weights.pth')
+        value_loss_path = os.path.join(path_existing, f'value_loss_log.pkl')
+        finish_step_path = os.path.join(path_existing, f'finish_step_log.pkl')
+        agent.act_net.load_state_dict(torch.load(weights_path))
+        with open(value_loss_path, 'rb') as f:
+            agent.value_loss_log = pickle.load(f)
+        with open(finish_step_path, 'rb') as f:
+            agent.finish_step_log = pickle.load(f)
 
     # Training loop.
     for i_ep in range(num_episodes):
