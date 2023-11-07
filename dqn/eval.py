@@ -10,7 +10,7 @@ def dqn_eval(saved_model_id):
         data_path = os.path.join(model_path, 'data.json')
         with open(data_path, 'r') as f:
             data = json.load(f)
-            print('Note that environment and hyperparameters will be overriden with the values from the saved model.')
+            print('Evaluating existing model.')
             env_name = data['env_name']
             learning_rate = data['learning_rate']
             gamma = data['gamma']
@@ -20,27 +20,27 @@ def dqn_eval(saved_model_id):
             net_layers = data['net_layers']
             optimizer = data['optimizer']
 
-        env = gym.make(env_name).unwrapped
-        num_state = env.observation_space.shape[0]
-        num_action = env.action_space.n
+            env = gym.make(env_name).unwrapped
+            num_state = env.observation_space.shape[0]
+            num_action = env.action_space.n
 
-        # Initialize the DQN agent.
-        agent = DQN(
-            num_state=num_state,
-            num_action=num_action,
-            learning_rate=learning_rate,
-            gamma=gamma,
-            exploration_rate=exploration_rate,
-            capacity=capacity, 
-            batch_size=batch_size, 
-            net_layers=net_layers,
-            optimizer=optimizer
-        )
+            # Initialize the DQN agent.
+            agent = DQN(
+                num_state=num_state,
+                num_action=num_action,
+                learning_rate=learning_rate,
+                gamma=gamma,
+                exploration_rate=exploration_rate,
+                capacity=capacity, 
+                batch_size=batch_size, 
+                net_layers=net_layers,
+                optimizer=optimizer
+            )
 
-        eval(
-            env_name=env_name,
-            agent=agent
-        )
+            eval(
+                env_name=env_name,
+                agent=agent
+            )
 
         return True
     
