@@ -24,19 +24,18 @@ def eval(env_name, model_id, learning_rate, gamma, exploration_rate, capacity, b
     weights_path = os.path.join('history', env_name, model_id, f'model_weights.pth')
     agent.act_net.load_state_dict(torch.load(weights_path))
 
-    state = env.reset()
     done = False
     total_num_steps = 0
     num_episodes = 10
     for i in range(0, num_episodes):
         num_steps = 0
+        state = env.reset()
         while not done:
             action = agent.select_action(state, num_action)
             state, reward, done, _ = env.step(action)
             num_steps += 1
         print(f'Number of steps in episode {i}: {num_steps}')
         total_num_steps += num_steps
-        state = env.reset()
     print(f'Total number of steps is: {total_num_steps}')
     avg_num_steps = total_num_steps / num_episodes
     print(f'Average number of steps is: {avg_num_steps}')
