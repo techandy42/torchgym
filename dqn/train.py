@@ -40,6 +40,11 @@ def parse_timedelta(delta_str):
 
 def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer_label='Adam', optimizer_callback=None, loss_func_label='MSELoss', loss_func_callback=None, model_label=None, saved_model_id=None, callbacks=[]):
     try:
+        if 'save_on_max_finish_step' in callbacks and 'save_on_min_finish_step' in callbacks:
+            print('You cannot have both save_on_max_finish_step and save_on_min_finish_step callbacks.')
+            print('Exiting from training...')
+            return False
+
         start_time = datetime.now()
 
         # Load hyperparameters from saved model.
@@ -85,11 +90,17 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
             with open(finish_step_path, 'rb') as f:
                 agent.finish_step_log = pickle.load(f)
 
+        model_id = str(uuid.uuid4())
+
         agent.act_net.train()
 
         # Training loop.
+        max_t = 0
+        min_t = 10000
         for i_ep in range(num_episodes):
             state = env.reset()
+            max_updated = False
+            min_updated = False
             for t in range(10000):
                 action = agent.select_action(state, num_action)
                 next_state, reward, done, _, info = env.step(action)
@@ -97,42 +108,77 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
                 agent.store_transition(transition)
                 state = next_state
                 if done or t >= 9999:
+                    # Update max_t and min_t 
+                    if t+1 > max_t:
+                        max_t = t+1
+                        max_updated = True
+                    if t+1 < min_t:
+                        min_t = t+1
+                        min_updated = True
+                    
+                    if (max_updated and 'save_on_max_finish_step' in callbacks) or (min_updated and 'save_on_min_finish_step' in callbacks):
+                        end_time = datetime.now()
+                        training_duration = end_time - start_time
+                        # Save model weights and training history.
+                        save(
+                            env_name=env_name,
+                            model_id=model_id,
+                            data={
+                                'model_label': model_id if model_label is None else model_label,
+                                'created_at': end_time.strftime("%Y-%m-%d %H:%M:%S") if saved_model_id is None else data['created_at'],
+                                'updated_at': end_time.strftime("%Y-%m-%d %H:%M:%S"),
+                                'training_duration': str(training_duration) if saved_model_id is None else str(parse_timedelta(data['training_duration']) + training_duration),
+                                'env_name': env_name,
+                                'model_name': 'dqn',
+                                'model_id': model_id,
+                                'num_episodes': i_ep if data is None else i_ep + data['num_episodes'],
+                                'learning_rate': learning_rate,
+                                'gamma': gamma,
+                                'exploration_rate': exploration_rate,
+                                'capacity': capacity, 
+                                'batch_size': batch_size, 
+                                'net_layers': net_layers,
+                                'optimizer_label': optimizer_label,
+                                'loss_func_label': loss_func_label
+                            }, 
+                            agent=agent
+                        )
+
+                    # Update agent and print training information.
                     agent.finish_step_log.append(t+1)
                     agent.update()
                     if i_ep % 10 == 0:
                         print("episodes {}, step is {} ".format(i_ep, t))
+                    
                     break
 
-        model_id = str(uuid.uuid4())
-
-        end_time = datetime.now()
-
-        training_duration = end_time - start_time
-
-        # Save model weights and training history.
-        save(
-            env_name=env_name,
-            model_id=model_id,
-            data={
-                'model_label': model_id if model_label is None else model_label,
-                'created_at': end_time.strftime("%Y-%m-%d %H:%M:%S") if saved_model_id is None else data['created_at'],
-                'updated_at': end_time.strftime("%Y-%m-%d %H:%M:%S"),
-                'training_duration': str(training_duration) if saved_model_id is None else str(parse_timedelta(data['training_duration']) + training_duration),
-                'env_name': env_name,
-                'model_name': 'dqn',
-                'model_id': model_id,
-                'num_episodes': num_episodes if data is None else num_episodes + data['num_episodes'],
-                'learning_rate': learning_rate,
-                'gamma': gamma,
-                'exploration_rate': exploration_rate,
-                'capacity': capacity, 
-                'batch_size': batch_size, 
-                'net_layers': net_layers,
-                'optimizer_label': optimizer_label,
-                'loss_func_label': loss_func_label
-            }, 
-            agent=agent
-        )
+        if 'save_on_min_finish_step' not in callbacks and 'save_on_max_finish_step' not in callbacks:
+            end_time = datetime.now()
+            training_duration = end_time - start_time
+            # Save model weights and training history.
+            save(
+                env_name=env_name,
+                model_id=model_id,
+                data={
+                    'model_label': model_id if model_label is None else model_label,
+                    'created_at': end_time.strftime("%Y-%m-%d %H:%M:%S") if saved_model_id is None else data['created_at'],
+                    'updated_at': end_time.strftime("%Y-%m-%d %H:%M:%S"),
+                    'training_duration': str(training_duration) if saved_model_id is None else str(parse_timedelta(data['training_duration']) + training_duration),
+                    'env_name': env_name,
+                    'model_name': 'dqn',
+                    'model_id': model_id,
+                    'num_episodes': num_episodes if data is None else num_episodes + data['num_episodes'],
+                    'learning_rate': learning_rate,
+                    'gamma': gamma,
+                    'exploration_rate': exploration_rate,
+                    'capacity': capacity, 
+                    'batch_size': batch_size, 
+                    'net_layers': net_layers,
+                    'optimizer_label': optimizer_label,
+                    'loss_func_label': loss_func_label
+                }, 
+                agent=agent
+            )
 
         # Handle callbacks.
         if 'record' in callbacks:
