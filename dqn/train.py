@@ -143,6 +143,10 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
                             }, 
                             agent=agent
                         )
+                        if 'save_on_max_finish_step' in callbacks:
+                            print(f'Saving model on current maximum finish step of {t+1} at episode {i_ep}...')
+                        elif 'save_on_min_finish_step' in callbacks:
+                            print(f'Saving model on current minimum finish step of {t+1} at episode {i_ep}...')
 
                     # Update agent and print training information.
                     agent.finish_step_log.append(t+1)
