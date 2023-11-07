@@ -4,7 +4,7 @@ import imageio
 import torch
 from ..dqn.models import DQN
 
-def record(env_name, model_id, capacity, learning_rate, batch_size, gamma, exploration_rate):
+def record(env_name, model_id, capacity, learning_rate, batch_size, gamma, exploration_rate, net_layers):
     env = gym.make(env_name)
     num_state = env.observation_space.shape[0]
     num_action = env.action_space.n
@@ -16,7 +16,8 @@ def record(env_name, model_id, capacity, learning_rate, batch_size, gamma, explo
         learning_rate=learning_rate,
         batch_size=batch_size, 
         gamma=gamma,
-        exploration_rate=exploration_rate
+        exploration_rate=exploration_rate,
+        net_layers=net_layers
     )
 
     # Construct the path to the weights file

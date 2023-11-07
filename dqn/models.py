@@ -7,19 +7,31 @@ import numpy as np
 
 # Define the neural network for Q-Learning
 class Net(nn.Module):
-    def __init__(self, num_state, num_action):
+    def __init__(self, num_state, num_action, net_layers):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(num_state, 100)
-        self.fc2 = nn.Linear(100, num_action)
+        self.layers = nn.ModuleList()  # Initialize a ModuleList to hold all the layers
+        
+        # Input layer
+        self.layers.append(nn.Linear(num_state, net_layers[0]))
+        
+        # Hidden layers
+        for i in range(1, len(net_layers)):
+            self.layers.append(nn.Linear(net_layers[i-1], net_layers[i]))
+        
+        # Output layer
+        self.layers.append(nn.Linear(net_layers[-1], num_action))
 
     def forward(self, x):
-        x = F.relu(self.fc1(x))
-        action_value = self.fc2(x)
+        # Apply ReLU activation function to each layer except the last
+        for layer in self.layers[:-1]:
+            x = F.relu(layer(x))
+        # No activation function for the last layer (action value layer)
+        action_value = self.layers[-1](x)
         return action_value
 
 # Define the DQN agent
 class DQN():
-    def __init__(self, num_state, num_action, capacity, learning_rate, batch_size, gamma, exploration_rate):
+    def __init__(self, num_state, num_action, capacity, learning_rate, batch_size, gamma, exploration_rate, net_layers):
         super(DQN, self).__init__()
         self.capacity = capacity
         self.learning_rate = learning_rate
@@ -28,7 +40,7 @@ class DQN():
         self.exploration_rate = exploration_rate
         self.memory_count = 0
         self.update_count = 0
-        self.target_net, self.act_net = Net(num_state, num_action), Net(num_state, num_action)
+        self.target_net, self.act_net = Net(num_state, num_action, net_layers), Net(num_state, num_action, net_layers)
         self.memory = [None]*self.capacity
         self.optimizer = optim.Adam(self.act_net.parameters(), self.learning_rate)
         self.loss_func = nn.MSELoss()
