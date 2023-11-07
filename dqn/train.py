@@ -97,7 +97,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
 
         # Training loop.
         max_t = 0
-        min_t = 10000
+        min_t = 10001
         for i_ep in range(num_episodes):
             state = env.reset()
             max_updated = False
