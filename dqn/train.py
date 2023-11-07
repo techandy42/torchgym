@@ -15,7 +15,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
     try:
         if 'only_eval' in callbacks and saved_model_id is None:
             print('Error: only_eval callback requires saved_model_id to be specified.')
-            return False
+            return
 
         # Load hyperparameters from saved model.
         data = None
@@ -47,6 +47,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
                     net_layers=net_layers,
                     optimizer=optimizer
                 )
+                return
         
         env = gym.make(env_name).unwrapped
         num_state = env.observation_space.shape[0]
