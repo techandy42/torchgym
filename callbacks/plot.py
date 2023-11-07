@@ -2,7 +2,7 @@ import pickle
 import matplotlib.pyplot as plt
 import os
 
-def plot(env_name, model_id):
+def plot(env_name, saved_model_id):
   # Create directory 'history' if it doesn't exist
   history_path = 'history'
   if not os.path.exists(history_path):
@@ -14,7 +14,7 @@ def plot(env_name, model_id):
       os.makedirs(env_path)
 
   # Create subdirectory '<model_id>' inside of 'history/<env_name>' if it doesn't exist
-  model_path = os.path.join(env_path, model_id)
+  model_path = os.path.join(env_path, saved_model_id)
   if not os.path.exists(model_path):
       os.makedirs(model_path)
 

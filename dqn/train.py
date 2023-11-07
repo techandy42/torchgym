@@ -174,13 +174,13 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
             record(
                 env_name=env_name,
                 agent=eval_agent,
-                model_id=model_id,
+                saved_model_id=model_id,
             )
 
         if 'plot' in callbacks:
             plot(
                 env_name=env_name, 
-                model_id=model_id
+                saved_model_id=model_id
             )
 
         eval(

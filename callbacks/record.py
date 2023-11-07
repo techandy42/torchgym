@@ -2,7 +2,7 @@ import os
 import gym
 import imageio
 
-def record(env_name, agent, model_id):
+def record(env_name, agent, saved_model_id):
     env = gym.make(env_name)
     num_action = env.action_space.n
     
@@ -19,7 +19,7 @@ def record(env_name, agent, model_id):
 
     env.close()
 
-    video_path = os.path.join('history', env_name, model_id, 'trained_model.mp4')
+    video_path = os.path.join('history', env_name, saved_model_id, 'trained_model.mp4')
 
     # Save the recorded frames as a video
     with imageio.get_writer(video_path, fps=30) as video:
