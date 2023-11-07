@@ -31,13 +31,13 @@ class Net(nn.Module):
 
 # Define the DQN agent
 class DQN():
-    def __init__(self, num_state, num_action, capacity, learning_rate, batch_size, gamma, exploration_rate, net_layers):
+    def __init__(self, num_state, num_action, learning_rate, gamma, exploration_rate, capacity, batch_size, net_layers):
         super(DQN, self).__init__()
-        self.capacity = capacity
         self.learning_rate = learning_rate
-        self.batch_size = batch_size
         self.gamma = gamma
         self.exploration_rate = exploration_rate
+        self.capacity = capacity
+        self.batch_size = batch_size
         self.memory_count = 0
         self.update_count = 0
         self.target_net, self.act_net = Net(num_state, num_action, net_layers), Net(num_state, num_action, net_layers)

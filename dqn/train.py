@@ -9,7 +9,7 @@ from ..callbacks.record import record
 from ..callbacks.plot import plot
 import uuid
 
-def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, batch_size=256, gamma=0.995, exploration_rate=0.1, callbacks=[], saved_model_id=None, net_layers=[100]):
+def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, callbacks=[], saved_model_id=None, net_layers=[100]):
     env = gym.make(env_name).unwrapped
     num_state = env.observation_space.shape[0]
     num_action = env.action_space.n
@@ -19,11 +19,11 @@ def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, batch_s
     agent = DQN(
         num_state=num_state,
         num_action=num_action,
-        capacity=capacity, 
         learning_rate=learning_rate,
-        batch_size=batch_size, 
         gamma=gamma,
         exploration_rate=exploration_rate,
+        capacity=capacity, 
+        batch_size=batch_size, 
         net_layers=net_layers
     )
 
@@ -64,12 +64,12 @@ def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, batch_s
             'env_name': env_name,
             'model_name': 'dqn',
             'model_id': model_id,
-            'num_episodes': num_episodes,
-            'capacity': capacity, 
             'learning_rate': learning_rate,
-            'batch_size': batch_size, 
+            'num_episodes': num_episodes,
             'gamma': gamma,
             'exploration_rate': exploration_rate,
+            'capacity': capacity, 
+            'batch_size': batch_size, 
             'net_layers': net_layers,
         }, 
         agent=agent
@@ -80,11 +80,11 @@ def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, batch_s
         record(
             env_name=env_name,
             model_id=model_id,
-            capacity=capacity,
             learning_rate=learning_rate,
-            batch_size=batch_size,
             gamma=gamma,
             exploration_rate=exploration_rate,
+            capacity=capacity,
+            batch_size=batch_size,
             net_layers=net_layers
         )
 

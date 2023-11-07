@@ -4,7 +4,7 @@ import imageio
 import torch
 from ..dqn.models import DQN
 
-def record(env_name, model_id, capacity, learning_rate, batch_size, gamma, exploration_rate, net_layers):
+def record(env_name, model_id, learning_rate, gamma, exploration_rate, capacity, batch_size, net_layers):
     env = gym.make(env_name)
     num_state = env.observation_space.shape[0]
     num_action = env.action_space.n
@@ -12,11 +12,11 @@ def record(env_name, model_id, capacity, learning_rate, batch_size, gamma, explo
     agent = DQN(
         num_state=num_state,
         num_action=num_action,
-        capacity=capacity, 
         learning_rate=learning_rate,
-        batch_size=batch_size, 
         gamma=gamma,
         exploration_rate=exploration_rate,
+        capacity=capacity, 
+        batch_size=batch_size, 
         net_layers=net_layers
     )
 
