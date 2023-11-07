@@ -19,14 +19,15 @@ class Net(nn.Module):
 
 # Define the DQN agent
 class DQN():
-    def __init__(self, num_state, num_action, capacity, learning_rate, memory_count, batch_size, gamma, update_count):
+    def __init__(self, num_state, num_action, capacity, learning_rate, batch_size, gamma, exploration_rate):
         super(DQN, self).__init__()
         self.capacity = capacity
         self.learning_rate = learning_rate
-        self.memory_count = memory_count
         self.batch_size = batch_size
         self.gamma = gamma
-        self.update_count = update_count
+        self.exploration_rate = exploration_rate
+        self.memory_count = 0
+        self.update_count = 0
         self.target_net, self.act_net = Net(num_state, num_action), Net(num_state, num_action)
         self.memory = [None]*self.capacity
         self.optimizer = optim.Adam(self.act_net.parameters(), self.learning_rate)
@@ -40,7 +41,7 @@ class DQN():
         value = self.act_net(state)
         action_max_value, index = torch.max(value, 1)
         action = index.item()
-        if np.random.rand(1) >= 0.9:
+        if np.random.rand(1) >= (1 - self.exploration_rate):
             action = np.random.choice(range(num_action), 1).item()
         return action
 

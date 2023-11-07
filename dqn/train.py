@@ -9,7 +9,7 @@ from ..callbacks.record import record
 from ..callbacks.plot import plot
 import uuid
 
-def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_count=0, batch_size=256, gamma=0.995, update_count=0, callbacks=[], saved_model_id=None):
+def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, batch_size=256, gamma=0.995, exploration_rate=0.1, callbacks=[], saved_model_id=None):
     env = gym.make(env_name).unwrapped
     num_state = env.observation_space.shape[0]
     num_action = env.action_space.n
@@ -20,11 +20,10 @@ def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_
         num_state=num_state,
         num_action=num_action,
         capacity=capacity, 
-        learning_rate=learning_rate, 
-        memory_count=memory_count, 
+        learning_rate=learning_rate,
         batch_size=batch_size, 
-        gamma=gamma, 
-        update_count=update_count
+        gamma=gamma,
+        exploration_rate=exploration_rate
     )
 
     if saved_model_id is not None:
@@ -66,11 +65,10 @@ def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_
             'model_id': model_id,
             'num_episodes': num_episodes,
             'capacity': capacity, 
-            'learning_rate': learning_rate, 
-            'memory_count': memory_count, 
+            'learning_rate': learning_rate,
             'batch_size': batch_size, 
-            'gamma': gamma, 
-            'update_count': update_count
+            'gamma': gamma,
+            'exploration_rate': exploration_rate
         }, 
         agent=agent
     )
@@ -82,10 +80,9 @@ def dqn_train(env_name, num_episodes, capacity=8000, learning_rate=1e-3, memory_
             model_id=model_id,
             capacity=capacity,
             learning_rate=learning_rate,
-            memory_count=memory_count,
             batch_size=batch_size,
             gamma=gamma,
-            update_count=update_count
+            exploration_rate=exploration_rate
         )
 
     if 'plot' in callbacks:
