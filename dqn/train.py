@@ -11,18 +11,14 @@ from ..callbacks.plot import plot
 import uuid
 
 def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], saved_model_id=None, callbacks=[]):
-    env = gym.make(env_name).unwrapped
-    num_state = env.observation_space.shape[0]
-    num_action = env.action_space.n
-    
-    Transition = namedtuple('Transition', ['state', 'action', 'reward', 'next_state'])
-
     # Load hyperparameters from saved model.
     if saved_model_id is not None:
         model_path = os.path.join('history', env_name, saved_model_id)
         data_path = os.path.join(model_path, 'data.json')
         with open(data_path, 'r') as f:
             data = json.load(f)
+            print('Note that environment and hyperparameters will be overriden with the values from the saved model.')
+            env_name = data['env_name']
             learning_rate = data['learning_rate']
             gamma = data['gamma']
             exploration_rate = data['exploration_rate']
@@ -30,6 +26,12 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
             batch_size = data['batch_size']
             net_layers = data['net_layers']
     
+    env = gym.make(env_name).unwrapped
+    num_state = env.observation_space.shape[0]
+    num_action = env.action_space.n
+    
+    Transition = namedtuple('Transition', ['state', 'action', 'reward', 'next_state'])
+
     # Initialize the DQN agent.
     agent = DQN(
         num_state=num_state,
