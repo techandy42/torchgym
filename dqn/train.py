@@ -96,7 +96,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
         agent.act_net.train()
 
         # Training loop.
-        max_t = 0
+        max_t = -1
         min_t = 10001
         for i_ep in range(num_episodes):
             state = env.reset()
