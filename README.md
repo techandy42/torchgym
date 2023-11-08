@@ -5,7 +5,7 @@ A PyTorch library that provides major RL algorithm(s) and functionalities for tr
 ### About
 
 - torchgym provides RL algorithms built on top of PyTorch, specifically for OpenAI Gym environments.
-- The library currently supports the DQN algorithm for Classic Control and Box-2D environments.
+- The library currently supports the DQN algorithm for Classic Control and Box-2d environments, any valid environment can be implemented by simply switching the environment name.
 - The library currently supports the Colab environment to run the models.
 
 ### Installation
@@ -19,7 +19,7 @@ A PyTorch library that provides major RL algorithm(s) and functionalities for tr
 !rm torchgym.zip
 !mv torchgym-main torchgym
 ```
-- To enable box-2d environments, run the following commands afterward.
+- To enable Box-2d environments, run the following commands afterward.
 ```
 # Install packages for box2d environments
 !pip install swig
@@ -37,7 +37,24 @@ A PyTorch library that provides major RL algorithm(s) and functionalities for tr
 > `dqn_train` Function Specification
 
 ```
-
+def dqn_train(
+  env_name: str, # a valid OpenAI gym environment name from Classical Control or Box-2d
+  num_episodes: int, # the number of training episodes 
+  episode_length=int, # (default: 10000) the number of steps in each episode, set this to the End of Episode number specified in [OpenAI Gymnasium](https://gymnasium.farama.org/)  
+  learning_rate=1e-3,
+  gamma=0.995,
+  exploration_rate=0.1,
+  capacity=8000,
+  batch_size=256,
+  net_layers=[100],
+  optimizer_label='Adam',
+  optimizer_callback=None,
+  loss_func_label='MSELoss',
+  loss_func_callback=None,
+  model_label=None,
+  saved_model_id=None,
+  callbacks=[]
+):
 ```
 
 > Example
