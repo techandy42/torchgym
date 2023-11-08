@@ -119,7 +119,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
                                 }, 
                                 agent=agent
                             )
-                            print(f'Saving model weights on new maximum rewards at episode {i_ep}...')
+                            print(f'Saving model weights on new maximum rewards at episode {i_ep} with total reward of {collected_reward}...')
                             model_saved = True
 
                     # Update agent and print training information.
@@ -127,7 +127,7 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
                     agent.collected_reward_log.append(collected_reward)
                     agent.update()
                     if i_ep % 10 == 0:
-                        print("episodes {}, step is {} ".format(i_ep, t))
+                        print("episodes {}, step is {}, total reward is {}".format(i_ep, t, collected_reward))
                     
                     break
 
