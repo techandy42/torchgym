@@ -1,6 +1,6 @@
 # torchgym
 
-![Logo](./pictures/torchgym.PNG)
+<img src="./pictures/torchgym.PNG" alt="logo" width="300" height="auto">
 
 A PyTorch library that provides major RL algorithms and functionalities for training OpenAI Gym agents.
 
