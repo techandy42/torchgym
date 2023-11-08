@@ -1,6 +1,10 @@
 # torchgym
 
+![Logo](./pictures/torchgym.PNG)
+
 A PyTorch library that provides major RL algorithms and functionalities for training OpenAI Gym agents.
+
+![Mountain Car Example](./pictures/mountain_car_v0_trained_model.gif)
 
 ### About
 
