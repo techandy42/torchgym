@@ -40,7 +40,7 @@ A PyTorch library that provides major RL algorithm(s) and functionalities for tr
 
 > `dqn_train` Function Specification
 
-```
+```py
 # The default hyperparameters are optimized for the MountainCar-v0 environment. 
 def dqn_train(
   env_name: str, # a valid OpenAI gym environment name from Classical Control or Box-2d
@@ -64,7 +64,7 @@ def dqn_train(
 ```
 
 > Training Example
-```python
+```py
 from torchgym.dqn.train import dqn_train
 
 model_id = dqn_train(env_name='MountainCar-v0', num_episodes=1000, episode_length=200, model_label='model1', callbacks=['record', 'plot', 'save_on_max_reward'])
@@ -72,7 +72,7 @@ model_id = dqn_train(env_name='MountainCar-v0', num_episodes=1000, episode_lengt
 
 > Evaluating
 - Evaluate the model's performance.
-```
+```py
 from torchgym.dqn.eval import dqn_eval
 
 if model_id is not None:
@@ -81,7 +81,7 @@ if model_id is not None:
 
 > Recording
 - Record the model running.
-```
+```py
 from torchgym.dqn.record import dqn_record
 
 if model_id is not None:
@@ -93,7 +93,7 @@ if model_id is not None:
 - You can create custom optimizer functions with callbacks.
 
 > Example
-```
+```py
 import torch.optim as optim
 
 optimizer_callback = lambda net_parameters, learning_rate: optim.SGD(net_parameters, lr=learning_rate)
@@ -106,7 +106,7 @@ model_id = dqn_train(env_name='MountainCar-v0', num_episodes=1000, episode_lengt
 - You can create custom loss functions with callbacks.
 
 > Example
-```
+```py
 import torch.nn as nn
 
 def l1_loss_func_callback(target_v, v, state, action, reward, next_state, normalized_reward):
@@ -121,7 +121,7 @@ model_id = dqn_train(env_name='MountainCar-v0', num_episodes=1000, episode_lengt
 - You can continue training existing models from the `history` directory by specifying its model ID, and the new model with extended training will be stored in a new directory inside the `history/<environment_name>` directory (the original model data will not be altered).
 
 > Example
-```python
+```py
 new_model_id = dqn_train(env_name='MountainCar-v0', num_episodes=1000, episode_length=200, model_label='model1', callbacks=['record', 'plot', 'save_on_max_reward'], saved_model_id=model_id)
 ```
 
@@ -130,19 +130,19 @@ new_model_id = dqn_train(env_name='MountainCar-v0', num_episodes=1000, episode_l
 - You can download and upload the `history` directory with built-in helper functions.
 
 > Import Helper Function Module
-```python
+```py
 from torchgym.functions.history import save_history, upload_history
 ```
 > Download to Local Computer
-```python
+```py
 save_history()
 ```
 > Download to Google Drive
-```
+```py
 save_history(action='drive')
 ```
 > Upload zipped `History` to Colab
-```
+```py
 upload_history()
 ```
 
