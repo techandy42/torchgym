@@ -32,6 +32,9 @@ A PyTorch library that provides major RL algorithm(s) and functionalities for tr
 - The library code will be located in the folder `torchgym`, where the submodules can be imported for usage.
 - The submodule `dqn` contains all the functions for training and using DQN model agents.
 - The submodule `functions` contains all the helper functions.
+- All training data are stored in the `history` directory, each environment is a subdirectory, and each model trained for the environment is the subdirectory of the environment directory.
+- Under each model's directory, which is named after the model's unique ID, there are the model weights, training logs, plots, and recorded video.
+- Information about the model's hyperparameters is stored in the 'data.json' file under each model directory.
 
 ### Training Model
 
@@ -55,16 +58,92 @@ def dqn_train(
   loss_func_callback: None | callback, # more on this below
   model_label: None | str, # (default: None) the name of the model, doesn't affect the training
   saved_model_id: None | str, # (default: None) more on this later
-  callbacks: str[], # (default: []) if 'record', 'plot', or 'save_on_max_reward' are included, these callbacks are called during training, more on this later
+  callbacks: str[], # (default: []) if 'record', 'plot', or 'save_on_max_reward' are included, these callbacks are called during training; 'record' creates a video of the model, 'plot' creates a plot of loss/num steps/reward, and 'save_on_max_reward' saves the model weight at the point of maximum reward during training
 ):
   ...
 ```
 
-> Example
+> Training Example
 ```python
 from torchgym.dqn.train import dqn_train
 
 model_id = dqn_train(env_name='MountainCar-v0', num_episodes=1000, episode_length=200, model_label='model1', callbacks=['record', 'plot', 'save_on_max_reward'])
+```
+
+> Evaluating
+- Evaluate the model's performance.
+```
+from torchgym.dqn.eval import dqn_eval
+
+if model_id is not None:
+  dqn_eval(env_name='MountainCar-v0', saved_model_id=model_id) # swap out the env_name to the correct environment that the model was trained on
+```
+
+> Recording
+- Record the model running.
+```
+from torchgym.dqn.record import dqn_record
+
+if model_id is not None:
+  dqn_record(env_name='MountainCar-v0', saved_model_id=model_id) # swap out the env_name to the correct environment that the model was trained on
+```
+
+### Optimizer Callback
+
+- You can create custom optimizer functions with callbacks.
+
+> Example
+```
+import torch.optim as optim
+
+optimizer_callback = lambda net_parameters, learning_rate: optim.SGD(net_parameters, lr=learning_rate)
+
+model_id = dqn_train(env_name='MountainCar-v0', num_episodes=1000, episode_length=200, model_label='model1', optimizer_label='SGD', optimizer_callback=optimizer_callback, callbacks=['record', 'plot', 'save_on_max_reward'])
+```
+
+### Loss Function Callback
+
+- You can create custom loss functions with callbacks.
+
+> Example
+```
+import torch.nn as nn
+
+def l1_loss_func_callback(target_v, v, state, action, reward, next_state, normalized_reward):
+    loss_func = nn.L1Loss()
+    return loss_func(target_v, v)
+
+model_id = dqn_train(env_name='MountainCar-v0', num_episodes=1000, episode_length=200, model_label='model1', loss_func_label='l1', loss_func_callback=loss_func_callback, callbacks=['record', 'plot', 'save_on_max_reward'])
+```
+
+### Training Existing Models
+
+- You can continue training existing models from the `history` directory by specifying its model ID, and the new model with extended training will be stored in a new directory inside the `history/<environment_name>` directory (the original model data will not be altered).
+
+> Example
+```python
+new_model_id = dqn_train(env_name='MountainCar-v0', num_episodes=1000, episode_length=200, model_label='model1', callbacks=['record', 'plot', 'save_on_max_reward'], saved_model_id=model_id)
+```
+
+### History
+
+- You can download and upload the `history` directory with built-in helper functions.
+
+> Import Helper Function Module
+```python
+from torchgym.functions.history import save_history, upload_history
+```
+> Download to Local Computer
+```python
+save_history()
+```
+> Download to Google Drive
+```
+save_history(action='drive')
+```
+> Upload zipped `History` to Colab
+```
+upload_history()
 ```
 
 ### More
