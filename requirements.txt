@@ -1,2 +1,0 @@
-swig
-gym[box2d]
