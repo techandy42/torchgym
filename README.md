@@ -1,6 +1,6 @@
 # torchgym
 
-A PyTorch library that provides major RL algorithm(s) and functionalities for training OpenAI Gym agents.
+A PyTorch library that provides major RL algorithms and functionalities for training OpenAI Gym agents.
 
 ### About
 
