@@ -1,6 +1,10 @@
 # torchgym
 
+<img src="./pictures/torchgym.PNG" alt="logo" width="300" height="auto">
+
 A PyTorch library that provides major RL algorithms and functionalities for training OpenAI Gym agents.
+
+<img src="./pictures/mountain_car_v0_trained_model.gif" alt="demo" width="300" height="auto">
 
 ### About
 
@@ -34,7 +38,7 @@ A PyTorch library that provides major RL algorithms and functionalities for trai
 - The submodule `functions` contains all the helper functions.
 - All training data are stored in the `history` directory, each environment is a subdirectory, and each model trained for the environment is the subdirectory of the environment directory.
 - Under each model's directory, which is named after the model's unique ID, there are the model weights, training logs, plots, and recorded video.
-- Information about the model's hyperparameters is stored in the 'data.json' file under each model directory.
+- Information about the model's hyperparameters is stored in the `data.json` file under each model directory.
 
 ### Training Model
 
