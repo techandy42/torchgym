@@ -29,7 +29,7 @@ def save_history(action='download'):
         shutil.copy('history.zip', drive_path)
         print(f"File 'history.zip' has been uploaded to Google Drive at: {drive_path}")
 
-def upload_and_unzip_history():
+def upload_history():
     # Upload the zip file
     uploaded = files.upload()
     zip_file_name = None
