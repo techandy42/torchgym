@@ -24,6 +24,7 @@ def save(env_name, model_id, data, agent):
     weights_path = os.path.join(model_path, 'model_weights.pth')
     value_loss_path = os.path.join(model_path, 'value_loss_log.pkl')
     finish_step_path = os.path.join(model_path, 'finish_step_log.pkl')
+    collected_reward_path = os.path.join(model_path, 'collected_reward_log.pkl')
     data_path = os.path.join(model_path, 'data.json')
 
     # Save the model weights
@@ -36,6 +37,10 @@ def save(env_name, model_id, data, agent):
     # Save the finish step log
     with open(finish_step_path, 'wb') as f:
         pickle.dump(agent.finish_step_log, f)
+
+    # Save the colected reward log
+    with open(collected_reward_path, 'wb') as f:
+        pickle.dump(agent.collected_reward_log, f)
 
     # Save the hyperparameters
     with open(data_path, 'w') as f:

@@ -32,10 +32,13 @@ def get_eval_agent(env_name, saved_model_id):
     weights_path = os.path.join(model_path, 'model_weights.pth')
     value_loss_path = os.path.join(model_path, 'value_loss_log.pkl')
     finish_step_path = os.path.join(model_path, 'finish_step_log.pkl')
+    collected_reward_path = os.path.join(model_path, 'collected_reward_log.pkl')
     eval_agent.act_net.load_state_dict(torch.load(weights_path))
     with open(value_loss_path, 'rb') as f:
         eval_agent.value_loss_log = pickle.load(f)
     with open(finish_step_path, 'rb') as f:
         eval_agent.finish_step_log = pickle.load(f)
+    with open(collected_reward_path, 'rb') as f:
+        eval_agent.collected_reward_log = pickle.load(f)
 
     return eval_agent

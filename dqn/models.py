@@ -50,6 +50,7 @@ class DQN():
         self.loss_func = default_loss_func_callback if loss_func_callback is None else loss_func_callback
         self.value_loss_log = []
         self.finish_step_log = []
+        self.collected_reward_log = []
 
     # Policy: Select action
     def select_action(self, state, num_action, exploration=True):
