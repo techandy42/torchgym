@@ -10,6 +10,22 @@ A PyTorch library that provides major RL algorithm(s) and functionalities for tr
 
 > Installation
 
+- Open a new Colab notebook.
+- Run the following commands.
+```
+# Copy source code
+!curl -L 'https://github.com/gitHubAndyLee2020/torchgym/archive/refs/heads/main.zip' -o torchgym.zip
+!unzip torchgym.zip
+!rm torchgym.zip
+!mv torchgym-main torchgym
+```
+- To enable box-2d environments, run the following commands afterward.
+```
+# Install packages for box2d environments
+!pip install swig
+!pip install gym[box2d]
+```
+
 > Interface
 
 > More
