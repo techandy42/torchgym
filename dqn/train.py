@@ -15,7 +15,7 @@ import uuid
 from datetime import datetime
 import sys
 
-def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer_label='Adam', optimizer_callback=None, loss_func_label='MSELoss', loss_func_callback=None, model_label=None, saved_model_id=None, callbacks=[]):
+def dqn_train(env_name, num_episodes, episode_length=10000, learning_rate=1e-3, gamma=0.995, exploration_rate=0.1, capacity=8000, batch_size=256, net_layers=[100], optimizer_label='Adam', optimizer_callback=None, loss_func_label='MSELoss', loss_func_callback=None, model_label=None, saved_model_id=None, callbacks=[]):
     try:
         if 'save_on_max_finish_step' in callbacks and 'save_on_min_finish_step' in callbacks:
             print('You cannot have both save_on_max_finish_step and save_on_min_finish_step callbacks.')
@@ -80,14 +80,14 @@ def dqn_train(env_name, num_episodes, learning_rate=1e-3, gamma=0.995, explorati
         for i_ep in range(num_episodes):
             state = env.reset()
             collected_reward = 0
-            for t in range(10000):
+            for t in range(episode_length):
                 action = agent.select_action(state, num_action)
                 next_state, reward, done, _, info = env.step(action)
                 transition = Transition(state, action, reward, next_state)
                 agent.store_transition(transition)
                 state = next_state
                 collected_reward += reward
-                if done or t >= 9999:
+                if done or t >= (episode_length - 1):
                     # Update max_t and min_t 
                     if collected_reward > max_collected_reward:
                         max_collected_reward = collected_reward
